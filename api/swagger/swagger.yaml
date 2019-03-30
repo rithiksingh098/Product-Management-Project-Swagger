@@ -34,7 +34,7 @@ paths:
           description: product object
           required: true
           schema:
-            $ref: '#/definitions/Product'
+            $ref: '#/definitions/GetProduct'
       responses:
         '405':
           description: Invalid input
@@ -85,7 +85,9 @@ paths:
         "200":
           description: Success
           schema:
-              $ref: "#/definitions/SucessResponse"
+            type: array
+            items:
+              $ref: "#/definitions/Product"
         # responses may fall through to errors
         default:
           description: Error
@@ -129,7 +131,7 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: "#/definitions/SucessResponse"
+            $ref: "#/definitions/SuccessResponse"
         # responses may fall through to errors
         default:
           description: Error
@@ -156,7 +158,7 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: "#/definitions/SucessResponse"
+              $ref: "#/definitions/Product"
         # responses may fall through to errors
         default:
           description: Error
@@ -179,7 +181,7 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: "#/definitions/SucessResponse"
+            $ref: "#/definitions/SuccessResponse"
         # responses may fall through to errors
         default:
           description: Error
@@ -202,7 +204,7 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: "#/definitions/SucessResponse"
+            $ref: "#/definitions/SuccessResponse"
         # responses may fall through to errors
         default:
           description: Error
@@ -211,6 +213,7 @@ paths:
   /categories:
     x-swagger-router-controller: hello_world
     post:
+      operationId: addCategory
       summary: add a new category
       parameters:
         - in: body
@@ -224,7 +227,11 @@ paths:
           description: Invalid input
         200:
           description: OK
+          schema:
+            $ref: "#/definitions/SuccessResponse"
+            
     get:
+      operationId: getcat
       summary: ""
       description: gives the category with the name
       parameters:
@@ -238,6 +245,8 @@ paths:
           description: "Invalid ids supplied"
         "404":
           description: "category not found"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
         "200":
           description: OK
           schema:
@@ -246,7 +255,7 @@ paths:
     x-swagger-pipe: swagger_raw
 # complex objects have schema definitions
 definitions:
-  SucessResponse:
+  SuccessResponse:
     required:
       - message
     properties:
@@ -298,6 +307,53 @@ definitions:
         format: int64
       name:
         type: string
+  GetProduct:
+    type: object
+    required:
+      - name
+      - photoUrls
+    properties:
+      name:
+        type: string
+      brand:
+        type: array
+        items:
+          type: string
+      price:
+        type: integer
+      color:
+        type: array
+        items:
+          type: string
+      category:
+        type: array
+        items:
+          type: string
+      subcategory:
+        type: array
+        items:
+          type: string
+      tags:
+        type: array
+        items:
+          type: string
+      photoUrls:
+        type: array
+        items:
+          type: string
+      status:
+        type: string
+        description: product status in the store
+        enum:
+          - available
+          - draft
+          - sold
+      mode:
+        type: string
+        description: mode of product to sell
+        enum:
+          - physical
+          - digital
   Product:
     type: object
     required:

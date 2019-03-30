@@ -28,6 +28,8 @@ module.exports = {
   hello: hello,
   hellop: hello,
   addProduct: addProduct,
+  getcat: getcat,
+  addCategory: addCategory,
   getproductsbycategoryid: getproductsbycategoryid,
   getproductsbysubcategoryid: getproductsbysubcategoryid,
   getproductsbybrandid: getproductsbybrandid,
@@ -36,19 +38,32 @@ module.exports = {
   getproductsbycolorid: getproductsbycolorid
 };
 var h = "hey";
-
+var ID = function () {
+  // Math.random should be unique because of its seeding algorithm.
+  // Convert it to base 36 (numbers + letters), and grab the first 9 characters
+  // after the decimal.
+  return '_' + Math.random().toString(36).substr(2, 9);
+};
 /*
   Functions in a127 controllers used for operations should take two parameters:
 
   Param 1: a handle to the request object
   Param 2: a handle to the response object
  */
-var arr = [{ name: 'note7', SKU: 'sdafg', brand: [{ id: 1, name: 'mi' }], price: 132234, color: [{ id: 1, name: 'black' }], category: [{ id: 1, name: 'electronics' }], subcategory: [{ id: 1, name: 'mobile' }], tags: [{ id: 1, name: '4gb' }], photoUrls: [] }];//this is the variable to store all the product objects
-var category = [[], ['sdafg'], [], [], []];
-var subcategory = [[], ['sdafg'], [], [], []];
-var tags = [[], ['sdafg'], [], [], []];
-var brand = [[], ['sdafg'], [], [], []];
-var color = [[], ['sdafg'], [], [], []];
+// var arr = [{ name: 'note7', SKU: 'sdafg', brand: [{ id: 1, name: 'mi' }], price: 132234, color: [{ id: 1, name: 'black' }], category: [{ id: 1, name: 'electronics' }], subcategory: [{ id: 1, name: 'mobile' }], tags: [{ id: 1, name: '4gb' }], photoUrls: [] }];//this is the variable to store all the product objects
+var arr = [];//this is the variable to store all the product objects
+var catj=[ { id: 1, name: 'appliances', taxpercent: 32 } ];
+var category = [[], [], [], [], []];
+var subcategory = [[], [], [], [], []];
+var tags = [[], [], [], [], []];
+var brand = [[], [], [], [], []];
+var color = [[], [], [], [], []];
+var status=[[],[],[]]
+var mode=[[],[]];
+var namecat=['','appliances','clothes','sports'];
+var namesubcat=['','footwear','upperwear','automatic'];
+var namebrand=['','apple','mi','adidas'];
+var nametag=['','light','2gb','heavy'];
 //these all 2d matrixes are for the id--will be the index of outer array
 //and inside will be the skus of the products
 //so get by tag or category or by sub category is possible
@@ -86,23 +101,24 @@ function addProduct(req, res) {
 
   m1.set(inp.SKU, arr.length - 1);
   for (var i = 0; i < inp.category.length; i++) {
-    category[inp.category[i].id].push(inp.SKU);
+    category[namecat.indexOf(inp.category[i].value)].push(inp.SKU);
   }
   for (var i = 0; i < inp.subcategory.length; i++) {
-    subcategory[inp.subcategory[i].id].push(inp.SKU);
+    subcategory[namecat.indexOf(inp.subcategory[i].value)].push(inp.SKU);
   }
   for (var i = 0; i < inp.tags.length; i++) {
-    tags[inp.tags[i].id].push(inp.SKU);
+    tags[namecat.indexOf(inp.tags[i].value)].push(inp.SKU);
   }
   for (var i = 0; i < inp.brand.length; i++) {
-    brand[inp.brand[i].id].push(inp.SKU);
+    brand[namecat.indexOf(inp.brand[i].value)].push(inp.SKU);
   }
   for (var i = 0; i < inp.color.length; i++) {
-    color[inp.color[i].id].push(inp.SKU);
+    color[namecat.indexOf(inp.color[i].value)].push(inp.SKU);
   }
 
   console.log(req.body);
   // variables defined in the Swagger document can be referenced using req.swagger.params.{parameter_name}
+  inp.category
   arr.push(req.body);
   var message = "object with sku " + req.body.SKU + " is added";
   res.json(message);
@@ -239,6 +255,38 @@ function getproductsbysku(req, res) {
   out.push(arr[m1.get(sku)]);
   res.send(out);
 }
+function addCategory(req,res){
+  var inp=req.body;
+  catj.push(inp);
+  console.log(catj);
+  namecat[inp.id]=inp.name;
+  // res.send(200);
+  // res.sendStatus(200);
+  res.json( util.format("added"));
+  console.log(namecat);
+}
+function getcat(req,res){
+  var inp=req.swagger.params.category.value;
+  console.log(inp);
+  var mes=util.format("notfound");
+  var flag=0;
+  for(var i=0;i<catj.length;i++){
+    console.log(catj[i].name);
+    if(catj[i].name==inp){
+      mes=catj[i];
+      flag=1;
+    }
+  }
+  if(flag==1){
+    res.status(200);
+    res.send(mes);
+  }
+  else{
+    res.status(404);
+    res.json(mes);
+  }
+}
+
 
 //this is the file to write all the functions and export them as operation id
 //the db schema for all the proucts
